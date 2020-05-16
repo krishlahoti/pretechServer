@@ -85,7 +85,7 @@ function firebaseInitialize() {
 
 
 function initialize() {
-    console.log("Retrieving data from firebase...!!");
+    console.log("initalize:=> Retrieving data from firebase...!!");
     firebase.firestore().collection("collections").doc("documents").onSnapshot((doc) => {
         if (doc.exists) {
             idealDelta1 = doc.data().idealDelta1;
@@ -103,13 +103,14 @@ function initialize() {
 
 function calculatingPara() {
 
+    console.log("Inside calaulatingPara()=>:::::")
     temp = [];
     csvResult = [];
     csvHeaderData = [];
 
     firebase.storage().ref('data.csv').getDownloadURL().then(function (url) {
         d3.csv(url).then(function (result) {
-            csvResult = result;
+            csvResult = [...result];
             let len = result.length;
             let currentDelta10 = 0;
             let currentDelta1 = 0;
@@ -189,6 +190,7 @@ function calculatingPara() {
 
             firebase.storage().ref('benchmark.csv').getDownloadURL().then(function (url) {
                 d3.csv(url).then(function (result) {
+                    console.log("inside  benchmark()=>:::::")
                     finalResult = calculatingAllVariables(csvResult, result[result.length - 1]);
                 });
             });
@@ -227,6 +229,8 @@ function getStartIndex(data) {
 
 function calculateTotalTime(data) {
 
+    console.log("inside  calculateTotalTime()=>:::::")
+
     let startIndex = getStartIndex(data);
     let endIndex = data.length - 1;
     let startTime = data[startIndex][VARIABLES.TIME].split(':')
@@ -246,7 +250,7 @@ function calculateTotalTime(data) {
 
 function calculate_P_Alt_Variables(currentRow, benchmarkRow, totalTimeDifferenceInMinutes) {
 
-    // console.log("benchmarkRow", benchmarkRow)
+    console.log("inside  calculate_P_Alt_Variables()=>:::::")
 
     let P_ALT_001 = (parseFloat(benchmarkRow[VARIABLES.DATA_009]) - parseFloat(currentRow[VARIABLES.PARA_001])) / (parseFloat(currentRow[VARIABLES.PARA_001]) / parseFloat(totalTimeDifferenceInMinutes))
 
@@ -259,6 +263,8 @@ function calculate_P_Alt_Variables(currentRow, benchmarkRow, totalTimeDifference
 }
 
 function calculateProjectionScreenGraphData(startIndex, lastOneHourData, completeData, benchmarkRow) {
+
+    console.log("inside  calculateProjectionScreenGraphData()=>:::::")
 
     let finalDataForP_ALT_01 = [];
     let finalDataForP_ALT_02 = [];
@@ -298,6 +304,8 @@ function calculateProjectionScreenGraphData(startIndex, lastOneHourData, complet
 
 function parseGraphData(data, benchmarkRow) {
 
+    console.log("inside  parseGraphData()=>:::::")
+
     let label = [];
     let completeData = [...data];
     const dataLength = data.length;
@@ -310,7 +318,6 @@ function parseGraphData(data, benchmarkRow) {
 
     //extracting labels
     let graphData = data.splice(startIndex, endIndex);
-    // console.log("completeData", completeData)
     let projectionScreenData = calculateProjectionScreenGraphData(startIndex, graphData, completeData, benchmarkRow);
     let labelArray = graphData.map(item => item[VARIABLES.TIME]);
     label = labelArray.map(item => item.split(':')[1]);
@@ -337,6 +344,8 @@ function parseGraphData(data, benchmarkRow) {
 }
 
 function calculate_C_Para_Variables(currentRow, benchmarkRow, totalTimeDifferenceInMinutes, P_ALT) {
+
+    console.log("inside  calculate_C_Para_Variables()=>:::::")
 
     let C_PARA_001 = currentRow[VARIABLES.PARA_001] / totalTimeDifferenceInMinutes;
 
@@ -378,9 +387,9 @@ function calculate_C_Para_Variables(currentRow, benchmarkRow, totalTimeDifferenc
 
 function calculateBatchAndShiftDifference(result) {
 
+    console.log("inside  calculateBatchAndShiftDifference()=>:::::")
 
     let len = result.length;
-    console.log("Last Row: ", result[len - 1])
     let currentRowTime = result[len - 1][VARIABLES.TIME].split(':');
 
     let batchStartIndex;
@@ -399,13 +408,8 @@ function calculateBatchAndShiftDifference(result) {
     let SHIFT_PARA_012 = 0;
     let SHIFT_C_PARA_008 = 0;
 
-    console.log("CurrentRowTime: ", currentRowTime) // [23,55,00]
-
     let hourTime = parseInt(currentRowTime[0]);
     let minuteTime = parseInt(currentRowTime[1]);
-
-    console.log("hourTime: ", hourTime)
-    console.log("minuteTime: ", minuteTime)
 
     if (!doesCurrentRowStartNewBatch(currentRowTime)) {
 
@@ -422,8 +426,6 @@ function calculateBatchAndShiftDifference(result) {
         } else {
             batchStartParaVariables = result[batchStartIndex]
         }
-
-        console.log("batch start time", batchStartParaVariables[VARIABLES.TIME])
 
         BATCH_PARA_001 = result[len - 1][VARIABLES.PARA_001] - batchStartParaVariables[VARIABLES.PARA_001];
         BATCH_PARA_010 = result[len - 1][VARIABLES.PARA_010] - batchStartParaVariables[VARIABLES.PARA_010];
@@ -453,8 +455,6 @@ function calculateBatchAndShiftDifference(result) {
             shiftStartParaVariables = result[shiftStartIndex]
         }
 
-        console.log("Shift start time", shiftStartParaVariables[VARIABLES.TIME])
-
         SHIFT_PARA_001 = result[len - 1][VARIABLES.PARA_001] - shiftStartParaVariables[VARIABLES.PARA_001];
         SHIFT_PARA_010 = result[len - 1][VARIABLES.PARA_010] - shiftStartParaVariables[VARIABLES.PARA_010];
         SHIFT_PARA_012 = result[len - 1][VARIABLES.PARA_012] - shiftStartParaVariables[VARIABLES.PARA_012];
@@ -475,14 +475,20 @@ function calculateBatchAndShiftDifference(result) {
 
 function calculatingAllVariables(result, benchmarkRow) {
 
-    let graphData = parseGraphData(result, benchmarkRow);
-    let totalTimeDifferenceInMinutes = calculateTotalTime(result);
-    let P_ALT = calculate_P_Alt_Variables(result[result.length - 1], benchmarkRow, totalTimeDifferenceInMinutes)
-    let C_PARA = calculate_C_Para_Variables(result[result.length - 1], benchmarkRow, totalTimeDifferenceInMinutes, P_ALT)
-    let BATCH_AND_SHIFT_DATA = calculateBatchAndShiftDifference(result)
+    console.log("inside  calculatingAllVariables()=>:::::")
+
+    let graphData = parseGraphData([...result], benchmarkRow);
+    let totalTimeDifferenceInMinutes = calculateTotalTime([...result]);
+
+    let cloneResult = [...result];
+    let lastRow = cloneResult[cloneResult.length - 1];
+
+    let P_ALT = calculate_P_Alt_Variables(lastRow, benchmarkRow, totalTimeDifferenceInMinutes)
+    let C_PARA = calculate_C_Para_Variables(lastRow, benchmarkRow, totalTimeDifferenceInMinutes, P_ALT)
+    let BATCH_AND_SHIFT_DATA = calculateBatchAndShiftDifference([...result])
 
     return {
-        currentRow: result[result.length - 1],
+        currentRow: lastRow,
         graphLabel: graphData.label,
         productRecovered: graphData.productRecovered,
         rmConsumed: graphData.rmConsumed,
@@ -506,7 +512,7 @@ app.get('/', function (req, res) {
     res.end(JSON.stringify(finalResult));
 })
 
-var server = app.listen(process.env.PORT, function () {
+var server = app.listen(8081, function () {
     firebaseInitialize();
 
     setInterval(() => {
