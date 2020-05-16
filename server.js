@@ -506,7 +506,7 @@ app.get('/', function (req, res) {
     res.end(JSON.stringify(finalResult));
 })
 
-var server = app.listen(8081, function () {
+var server = app.listen(process.env.PORT, function () {
     firebaseInitialize();
 
     setInterval(() => {
