@@ -1,0 +1,43 @@
+23:55:00
+
+Shift Timings:
+07:00:00
+15:00:00
+23:00:00
+
+
+1. current time (23-7) => 
+
+a) 5:30:00 => 30/5 + 5*12  + 12
+
+b) 23:55:00  => 55/5 
+
+
+2. current time (7-15)=> 14:40:00
+
+07 - 15 => 40/5 + (14-7)*12
+
+3. current time (15-23) => 18:55:00
+
+15 - 23 => 55/5 + (18-15)*12
+
+
+Batch Timing: 
+
+-Start Time:- 07:00:00 until current time
+
+23:55:00
+(55/5 + (23-7)*12 ) => 203
+
+
+6:30:00
+
+(30/5 + (6-7)*12) => (6 - 12) + 24*12 => 282 
+
+
+Case 1: the csv will start from single row
+
+
+
+Case 2: we get csv with initial record count exceeding 1
+
