@@ -191,7 +191,8 @@ function calculatingPara() {
             firebase.storage().ref('benchmark.csv').getDownloadURL().then(function (url) {
                 d3.csv(url).then(function (result) {
                     console.log("inside  benchmark()=>:::::")
-                    finalResult = calculatingAllVariables(csvResult, result[result.length - 1]);
+                    csvHeaderData = result[result.length - 1];
+                    finalResult = calculatingAllVariables(csvResult, csvHeaderData);
                 });
             });
 
@@ -298,7 +299,7 @@ function calculateProjectionScreenGraphData(startIndex, lastOneHourData, complet
         C_PARA_008: finalDataForC_PARA_08,
         LAST_ONE_HR_PARA_001: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_001] - lastOneHourData[0][VARIABLES.PARA_001],
         LAST_ONE_HR_PARA_010: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_010] - lastOneHourData[0][VARIABLES.PARA_010],
-        LAST_ONE_HR_PARA_012: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012] - lastOneHourData[0][VARIABLES.PARA_012]
+        LAST_ONE_HR_PARA_012: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012] - lastOneHourData[0][VARIABLES.PARA_012],
     }
 }
 
@@ -339,7 +340,8 @@ function parseGraphData(data, benchmarkRow) {
         C_PARA_008: projectionScreenData.C_PARA_008,
         LAST_ONE_HR_PARA_001: projectionScreenData.LAST_ONE_HR_PARA_001,
         LAST_ONE_HR_PARA_010: projectionScreenData.LAST_ONE_HR_PARA_010,
-        LAST_ONE_HR_PARA_012: projectionScreenData.LAST_ONE_HR_PARA_012
+        LAST_ONE_HR_PARA_012: projectionScreenData.LAST_ONE_HR_PARA_012,
+        LAST_ONE_HR_C_PARA_008: projectionScreenData.LAST_ONE_HR_PARA_001 - projectionScreenData.LAST_ONE_HR_PARA_010 - projectionScreenData.LAST_ONE_HR_PARA_012
     }
 }
 
@@ -489,6 +491,7 @@ function calculatingAllVariables(result, benchmarkRow) {
 
     return {
         currentRow: lastRow,
+        benchmarkRow: csvHeaderData,
         graphLabel: graphData.label,
         productRecovered: graphData.productRecovered,
         rmConsumed: graphData.rmConsumed,
@@ -504,7 +507,15 @@ function calculatingAllVariables(result, benchmarkRow) {
         LAST_ONE_HR_PARA_001: graphData.LAST_ONE_HR_PARA_001,
         LAST_ONE_HR_PARA_010: graphData.LAST_ONE_HR_PARA_010,
         LAST_ONE_HR_PARA_012: graphData.LAST_ONE_HR_PARA_012,
-        BATCH_AND_SHIFT_DATA: BATCH_AND_SHIFT_DATA
+        LAST_ONE_HR_C_PARA_008: graphData.LAST_ONE_HR_C_PARA_008,
+        SHIFT_PARA_001: BATCH_AND_SHIFT_DATA.SHIFT_PARA_001,
+        SHIFT_PARA_010: BATCH_AND_SHIFT_DATA.SHIFT_PARA_010,
+        SHIFT_PARA_012: BATCH_AND_SHIFT_DATA.SHIFT_PARA_012,
+        SHIFT_C_PARA_008: BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008,
+        BATCH_PARA_001: BATCH_AND_SHIFT_DATA.BATCH_PARA_001,
+        BATCH_PARA_010: BATCH_AND_SHIFT_DATA.BATCH_PARA_010,
+        BATCH_PARA_012: BATCH_AND_SHIFT_DATA.BATCH_PARA_012,
+        BATCH_C_PARA_008: BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008
     }
 }
 
@@ -516,8 +527,6 @@ var server = app.listen(8081, function () {
     firebaseInitialize();
 
     setInterval(() => {
-        let startTime = Date.now();
         initialize();
-        // console.log(Date.now()-startTime);
-    }, 3000);
+    }, 15000);
 })
