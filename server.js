@@ -457,13 +457,13 @@ function calculateBatchAndShiftDifference(result) {
             batchStartParaVariables = result[batchStartIndex]
         }
 
-        BATCH_PARA_001_START = batchStartParaVariables[VARIABLES.PARA_001];
-        BATCH_PARA_010_START = batchStartParaVariables[VARIABLES.PARA_010];
-        BATCH_PARA_012_START = batchStartParaVariables[VARIABLES.PARA_012];
+        BATCH_PARA_001_START = parseInt(batchStartParaVariables[VARIABLES.PARA_001]);
+        BATCH_PARA_010_START = parseInt(batchStartParaVariables[VARIABLES.PARA_010]);
+        BATCH_PARA_012_START = parseInt(batchStartParaVariables[VARIABLES.PARA_012]);
         BATCH_C_PARA_008_START = BATCH_PARA_001_START - BATCH_PARA_010_START - BATCH_PARA_012_START;
-        BATCH_PARA_001_END = result[len - 1][VARIABLES.PARA_001];
-        BATCH_PARA_010_END = result[len - 1][VARIABLES.PARA_010];
-        BATCH_PARA_012_END = result[len - 1][VARIABLES.PARA_012];
+        BATCH_PARA_001_END = parseInt(result[len - 1][VARIABLES.PARA_001]);
+        BATCH_PARA_010_END = parseInt(result[len - 1][VARIABLES.PARA_010]);
+        BATCH_PARA_012_END = parseInt(result[len - 1][VARIABLES.PARA_012]);
         BATCH_C_PARA_008_END = BATCH_PARA_001_END - BATCH_PARA_010_END - BATCH_PARA_012_END;
 
         BATCH_PARA_001 = BATCH_PARA_001_END - BATCH_PARA_001_START;
@@ -494,13 +494,13 @@ function calculateBatchAndShiftDifference(result) {
             shiftStartParaVariables = result[shiftStartIndex]
         }
 
-        SHIFT_PARA_001_START = shiftStartParaVariables[VARIABLES.PARA_001];
-        SHIFT_PARA_010_START = shiftStartParaVariables[VARIABLES.PARA_010];
-        SHIFT_PARA_012_START = shiftStartParaVariables[VARIABLES.PARA_012];
+        SHIFT_PARA_001_START = parseInt(shiftStartParaVariables[VARIABLES.PARA_001]);
+        SHIFT_PARA_010_START = parseInt(shiftStartParaVariables[VARIABLES.PARA_010]);
+        SHIFT_PARA_012_START = parseInt(shiftStartParaVariables[VARIABLES.PARA_012]);
         SHIFT_C_PARA_008_START = SHIFT_PARA_001_START - SHIFT_PARA_010_START - SHIFT_PARA_012_START;
-        SHIFT_PARA_001_END = result[len - 1][VARIABLES.PARA_001];
-        SHIFT_PARA_010_END = result[len - 1][VARIABLES.PARA_010];
-        SHIFT_PARA_012_END = result[len - 1][VARIABLES.PARA_012];
+        SHIFT_PARA_001_END = parseInt(result[len - 1][VARIABLES.PARA_001]);
+        SHIFT_PARA_010_END = parseInt(result[len - 1][VARIABLES.PARA_010]);
+        SHIFT_PARA_012_END = parseInt(result[len - 1][VARIABLES.PARA_012]);
         SHIFT_C_PARA_008_END = SHIFT_PARA_001_END - SHIFT_PARA_010_END - SHIFT_PARA_012_END;
 
         SHIFT_PARA_001 = SHIFT_PARA_001_END - SHIFT_PARA_001_START;
