@@ -88,13 +88,13 @@ function initialize() {
     console.log("initalize:=> Retrieving data from firebase...!!");
     firebase.firestore().collection("collections").doc("documents").onSnapshot((doc) => {
         if (doc.exists) {
-            idealDelta1 = doc.data().idealDelta1;
-            idealDelta10 = doc.data().idealDelta10;
+            idealDelta1 = parseFloat(doc.data().idealDelta1);
+            idealDelta10 = parseFloat(doc.data().idealDelta10);
             idealRow = doc.data().idealValues;
-            BDATA_001 = doc.data().BDATA_001;
-            BDATA_002 = doc.data().BDATA_002;
-            BDATA_003 = doc.data().BDATA_003;
-            BDATA_004 = doc.data().BDATA_004;
+            BDATA_001 = parseFloat(doc.data().BDATA_001);
+            BDATA_002 = parseFloat(doc.data().BDATA_002);
+            BDATA_003 = parseFloat(doc.data().BDATA_003);
+            BDATA_004 = parseFloat(doc.data().BDATA_004);
 
             calculatingPara();
         }
@@ -296,12 +296,12 @@ function calculateProjectionScreenGraphData(startIndex, lastOneHourData, complet
         LAST_ONE_HR_PARA_001: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_001] - lastOneHourData[0][VARIABLES.PARA_001],
         LAST_ONE_HR_PARA_010: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_010] - lastOneHourData[0][VARIABLES.PARA_010],
         LAST_ONE_HR_PARA_012: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012] - lastOneHourData[0][VARIABLES.PARA_012],
-        LAST_ONE_HR_PARA_001_START: lastOneHourData[0][VARIABLES.PARA_001],
-        LAST_ONE_HR_PARA_010_START: lastOneHourData[0][VARIABLES.PARA_010],
-        LAST_ONE_HR_PARA_012_START: lastOneHourData[0][VARIABLES.PARA_012],
-        LAST_ONE_HR_PARA_001_END: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_001],
-        LAST_ONE_HR_PARA_010_END: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_010],
-        LAST_ONE_HR_PARA_012_END: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012],
+        LAST_ONE_HR_PARA_001_START: parseInt(lastOneHourData[0][VARIABLES.PARA_001]),
+        LAST_ONE_HR_PARA_010_START: parseInt(lastOneHourData[0][VARIABLES.PARA_010]),
+        LAST_ONE_HR_PARA_012_START: parseInt(lastOneHourData[0][VARIABLES.PARA_012]),
+        LAST_ONE_HR_PARA_001_END: parseInt(lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_001]),
+        LAST_ONE_HR_PARA_010_END: parseInt(lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_010]),
+        LAST_ONE_HR_PARA_012_END: parseInt(lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012])
     }
 }
 
