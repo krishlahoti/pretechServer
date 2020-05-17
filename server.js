@@ -270,7 +270,6 @@ function calculateProjectionScreenGraphData(startIndex, lastOneHourData, complet
     let finalDataForP_ALT_01 = [];
     let finalDataForP_ALT_02 = [];
     let finalDataForC_PARA_01 = [];
-    let finalDataForC_PARA_08 = [];
 
     let initialCompleteData = [...completeData];
     let lastOneHourDataLength = lastOneHourData.length;
@@ -284,9 +283,7 @@ function calculateProjectionScreenGraphData(startIndex, lastOneHourData, complet
 
         let P_ALT = calculate_P_Alt_Variables(lastOneHourData[i], benchmarkRow, totalTime);
         let C_PARA_001 = (lastOneHourData[i][VARIABLES.PARA_001]) / totalTime;
-        let C_PARA_008 = lastOneHourData[i][VARIABLES.PARA_001] - lastOneHourData[i][VARIABLES.PARA_010] - lastOneHourData[i][VARIABLES.PARA_012]
         finalDataForC_PARA_01[i] = C_PARA_001;
-        finalDataForC_PARA_08[i] = C_PARA_008;
         finalDataForP_ALT_01[i] = P_ALT.P_ALT_001;
         finalDataForP_ALT_02[i] = P_ALT.P_ALT_002;
         initialCompleteData = [...completeData];
@@ -296,10 +293,15 @@ function calculateProjectionScreenGraphData(startIndex, lastOneHourData, complet
         P_ALT_001: finalDataForP_ALT_01,
         P_ALT_002: finalDataForP_ALT_02,
         C_PARA_001: finalDataForC_PARA_01,
-        C_PARA_008: finalDataForC_PARA_08,
         LAST_ONE_HR_PARA_001: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_001] - lastOneHourData[0][VARIABLES.PARA_001],
         LAST_ONE_HR_PARA_010: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_010] - lastOneHourData[0][VARIABLES.PARA_010],
         LAST_ONE_HR_PARA_012: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012] - lastOneHourData[0][VARIABLES.PARA_012],
+        LAST_ONE_HR_PARA_001_START: lastOneHourData[0][VARIABLES.PARA_001],
+        LAST_ONE_HR_PARA_010_START: lastOneHourData[0][VARIABLES.PARA_010],
+        LAST_ONE_HR_PARA_012_START: lastOneHourData[0][VARIABLES.PARA_012],
+        LAST_ONE_HR_PARA_001_END: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_001],
+        LAST_ONE_HR_PARA_010_END: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_010],
+        LAST_ONE_HR_PARA_012_END: lastOneHourData[lastOneHourDataLength - 1][VARIABLES.PARA_012],
     }
 }
 
@@ -341,7 +343,15 @@ function parseGraphData(data, benchmarkRow) {
         LAST_ONE_HR_PARA_001: projectionScreenData.LAST_ONE_HR_PARA_001,
         LAST_ONE_HR_PARA_010: projectionScreenData.LAST_ONE_HR_PARA_010,
         LAST_ONE_HR_PARA_012: projectionScreenData.LAST_ONE_HR_PARA_012,
-        LAST_ONE_HR_C_PARA_008: projectionScreenData.LAST_ONE_HR_PARA_001 - projectionScreenData.LAST_ONE_HR_PARA_010 - projectionScreenData.LAST_ONE_HR_PARA_012
+        LAST_ONE_HR_C_PARA_008: projectionScreenData.LAST_ONE_HR_PARA_001 - projectionScreenData.LAST_ONE_HR_PARA_010 - projectionScreenData.LAST_ONE_HR_PARA_012,
+        LAST_ONE_HR_PARA_001_START: projectionScreenData.LAST_ONE_HR_PARA_001_START,
+        LAST_ONE_HR_PARA_010_START: projectionScreenData.LAST_ONE_HR_PARA_010_START,
+        LAST_ONE_HR_PARA_012_START: projectionScreenData.LAST_ONE_HR_PARA_012_START,
+        LAST_ONE_HR_C_PARA_008_START: projectionScreenData.LAST_ONE_HR_PARA_001_START - projectionScreenData.LAST_ONE_HR_PARA_010_START - projectionScreenData.LAST_ONE_HR_PARA_012_START,
+        LAST_ONE_HR_PARA_001_END: projectionScreenData.LAST_ONE_HR_PARA_001_END,
+        LAST_ONE_HR_PARA_010_END: projectionScreenData.LAST_ONE_HR_PARA_010_END,
+        LAST_ONE_HR_PARA_012_END: projectionScreenData.LAST_ONE_HR_PARA_012_END,
+        LAST_ONE_HR_C_PARA_008_END: projectionScreenData.LAST_ONE_HR_PARA_001_END - projectionScreenData.LAST_ONE_HR_PARA_010_END - projectionScreenData.LAST_ONE_HR_PARA_012_END
     }
 }
 
@@ -410,6 +420,24 @@ function calculateBatchAndShiftDifference(result) {
     let SHIFT_PARA_012 = 0;
     let SHIFT_C_PARA_008 = 0;
 
+    let SHIFT_PARA_001_START = 0;
+    let SHIFT_PARA_010_START = 0;
+    let SHIFT_PARA_012_START = 0;
+    let SHIFT_C_PARA_008_START = 0;
+    let SHIFT_PARA_001_END = 0;
+    let SHIFT_PARA_010_END = 0;
+    let SHIFT_PARA_012_END = 0;
+    let SHIFT_C_PARA_008_END = 0;
+
+    let BATCH_PARA_001_START = 0;
+    let BATCH_PARA_010_START = 0;
+    let BATCH_PARA_012_START = 0;
+    let BATCH_C_PARA_008_START = 0;
+    let BATCH_PARA_001_END = 0;
+    let BATCH_PARA_010_END = 0;
+    let BATCH_PARA_012_END = 0;
+    let BATCH_C_PARA_008_END = 0;
+
     let hourTime = parseInt(currentRowTime[0]);
     let minuteTime = parseInt(currentRowTime[1]);
 
@@ -429,10 +457,19 @@ function calculateBatchAndShiftDifference(result) {
             batchStartParaVariables = result[batchStartIndex]
         }
 
-        BATCH_PARA_001 = result[len - 1][VARIABLES.PARA_001] - batchStartParaVariables[VARIABLES.PARA_001];
-        BATCH_PARA_010 = result[len - 1][VARIABLES.PARA_010] - batchStartParaVariables[VARIABLES.PARA_010];
-        BATCH_PARA_012 = result[len - 1][VARIABLES.PARA_012] - batchStartParaVariables[VARIABLES.PARA_012];
-        BATCH_C_PARA_008 = BATCH_PARA_001 - BATCH_PARA_010 - BATCH_PARA_012;
+        BATCH_PARA_001_START = batchStartParaVariables[VARIABLES.PARA_001];
+        BATCH_PARA_010_START = batchStartParaVariables[VARIABLES.PARA_010];
+        BATCH_PARA_012_START = batchStartParaVariables[VARIABLES.PARA_012];
+        BATCH_C_PARA_008_START = BATCH_PARA_001_START - BATCH_PARA_010_START - BATCH_PARA_012_START;
+        BATCH_PARA_001_END = result[len - 1][VARIABLES.PARA_001];
+        BATCH_PARA_010_END = result[len - 1][VARIABLES.PARA_010];
+        BATCH_PARA_012_END = result[len - 1][VARIABLES.PARA_012];
+        BATCH_C_PARA_008_END = BATCH_PARA_001_END - BATCH_PARA_010_END - BATCH_PARA_012_END;
+
+        BATCH_PARA_001 = BATCH_PARA_001_END - BATCH_PARA_001_START;
+        BATCH_PARA_010 = BATCH_PARA_010_END - BATCH_PARA_010_START;
+        BATCH_PARA_012 = BATCH_PARA_012_END - BATCH_PARA_012_START;
+        BATCH_C_PARA_008 = BATCH_C_PARA_008_END - BATCH_C_PARA_008_START;
     }
 
     if (!doesCurrentRowStartNewShift(currentRowTime)) {
@@ -457,10 +494,19 @@ function calculateBatchAndShiftDifference(result) {
             shiftStartParaVariables = result[shiftStartIndex]
         }
 
-        SHIFT_PARA_001 = result[len - 1][VARIABLES.PARA_001] - shiftStartParaVariables[VARIABLES.PARA_001];
-        SHIFT_PARA_010 = result[len - 1][VARIABLES.PARA_010] - shiftStartParaVariables[VARIABLES.PARA_010];
-        SHIFT_PARA_012 = result[len - 1][VARIABLES.PARA_012] - shiftStartParaVariables[VARIABLES.PARA_012];
-        SHIFT_C_PARA_008 = SHIFT_PARA_001 - SHIFT_PARA_010 - SHIFT_PARA_012;
+        SHIFT_PARA_001_START = shiftStartParaVariables[VARIABLES.PARA_001];
+        SHIFT_PARA_010_START = shiftStartParaVariables[VARIABLES.PARA_010];
+        SHIFT_PARA_012_START = shiftStartParaVariables[VARIABLES.PARA_012];
+        SHIFT_C_PARA_008_START = SHIFT_PARA_001_START - SHIFT_PARA_010_START - SHIFT_PARA_012_START;
+        SHIFT_PARA_001_END = result[len - 1][VARIABLES.PARA_001];
+        SHIFT_PARA_010_END = result[len - 1][VARIABLES.PARA_010];
+        SHIFT_PARA_012_END = result[len - 1][VARIABLES.PARA_012];
+        SHIFT_C_PARA_008_END = SHIFT_PARA_001_END - SHIFT_PARA_010_END - SHIFT_PARA_012_END;
+
+        SHIFT_PARA_001 = SHIFT_PARA_001_END - SHIFT_PARA_001_START;
+        SHIFT_PARA_010 = SHIFT_PARA_010_END - SHIFT_PARA_010_START;
+        SHIFT_PARA_012 = SHIFT_PARA_012_END - SHIFT_PARA_012_START;
+        SHIFT_C_PARA_008 = SHIFT_C_PARA_008_END - SHIFT_C_PARA_008_START;
     }
 
     return {
@@ -471,7 +517,24 @@ function calculateBatchAndShiftDifference(result) {
         BATCH_PARA_001: BATCH_PARA_001,
         BATCH_PARA_010: BATCH_PARA_010,
         BATCH_PARA_012: BATCH_PARA_012,
-        BATCH_C_PARA_008: BATCH_C_PARA_008
+        BATCH_C_PARA_008: BATCH_C_PARA_008,
+        SHIFT_PARA_001_START : SHIFT_PARA_001_START,
+        SHIFT_PARA_010_START : SHIFT_PARA_010_START,
+        SHIFT_PARA_012_START : SHIFT_PARA_012_START,
+        SHIFT_C_PARA_008_START : SHIFT_C_PARA_008_START,
+        SHIFT_PARA_001_END : SHIFT_PARA_001_END,
+        SHIFT_PARA_010_END : SHIFT_PARA_010_END,
+        SHIFT_PARA_012_END : SHIFT_PARA_012_END,
+        SHIFT_C_PARA_008_END : SHIFT_C_PARA_008_END,
+        BATCH_PARA_001_START : BATCH_PARA_001_START,
+        BATCH_PARA_010_START : BATCH_PARA_010_START,
+        BATCH_PARA_012_START : BATCH_PARA_012_START,
+        BATCH_C_PARA_008_START : BATCH_C_PARA_008_START,
+        BATCH_PARA_001_END : BATCH_PARA_001_END,
+        BATCH_PARA_010_END : BATCH_PARA_010_END,
+        BATCH_PARA_012_END : BATCH_PARA_012_END,
+        BATCH_C_PARA_008_END : BATCH_C_PARA_008_END
+
     }
 }
 
@@ -508,6 +571,14 @@ function calculatingAllVariables(result, benchmarkRow) {
         LAST_ONE_HR_PARA_010: graphData.LAST_ONE_HR_PARA_010,
         LAST_ONE_HR_PARA_012: graphData.LAST_ONE_HR_PARA_012,
         LAST_ONE_HR_C_PARA_008: graphData.LAST_ONE_HR_C_PARA_008,
+        LAST_ONE_HR_PARA_001_START: graphData.LAST_ONE_HR_PARA_001_START,
+        LAST_ONE_HR_PARA_010_START: graphData.LAST_ONE_HR_PARA_010_START,
+        LAST_ONE_HR_PARA_012_START: graphData.LAST_ONE_HR_PARA_012_START,
+        LAST_ONE_HR_C_PARA_008_START: graphData.LAST_ONE_HR_C_PARA_008_START,
+        LAST_ONE_HR_PARA_001_END: graphData.LAST_ONE_HR_PARA_001_END,
+        LAST_ONE_HR_PARA_010_END: graphData.LAST_ONE_HR_PARA_010_END,
+        LAST_ONE_HR_PARA_012_END: graphData.LAST_ONE_HR_PARA_012_END,
+        LAST_ONE_HR_C_PARA_008_END: graphData.LAST_ONE_HR_C_PARA_008_END,
         SHIFT_PARA_001: BATCH_AND_SHIFT_DATA.SHIFT_PARA_001,
         SHIFT_PARA_010: BATCH_AND_SHIFT_DATA.SHIFT_PARA_010,
         SHIFT_PARA_012: BATCH_AND_SHIFT_DATA.SHIFT_PARA_012,
@@ -515,7 +586,23 @@ function calculatingAllVariables(result, benchmarkRow) {
         BATCH_PARA_001: BATCH_AND_SHIFT_DATA.BATCH_PARA_001,
         BATCH_PARA_010: BATCH_AND_SHIFT_DATA.BATCH_PARA_010,
         BATCH_PARA_012: BATCH_AND_SHIFT_DATA.BATCH_PARA_012,
-        BATCH_C_PARA_008: BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008
+        BATCH_C_PARA_008: BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008,
+        SHIFT_PARA_001_START : BATCH_AND_SHIFT_DATA.SHIFT_PARA_001_START,
+        SHIFT_PARA_010_START : BATCH_AND_SHIFT_DATA.SHIFT_PARA_010_START,
+        SHIFT_PARA_012_START : BATCH_AND_SHIFT_DATA.SHIFT_PARA_012_START,
+        SHIFT_C_PARA_008_START : BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008_START,
+        SHIFT_PARA_001_END : BATCH_AND_SHIFT_DATA.SHIFT_PARA_001_END,
+        SHIFT_PARA_010_END : BATCH_AND_SHIFT_DATA.SHIFT_PARA_010_END,
+        SHIFT_PARA_012_END : BATCH_AND_SHIFT_DATA.SHIFT_PARA_012_END,
+        SHIFT_C_PARA_008_END : BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008_END,
+        BATCH_PARA_001_START : BATCH_AND_SHIFT_DATA.BATCH_PARA_001_START,
+        BATCH_PARA_010_START : BATCH_AND_SHIFT_DATA.BATCH_PARA_010_START,
+        BATCH_PARA_012_START : BATCH_AND_SHIFT_DATA.BATCH_PARA_012_START,
+        BATCH_C_PARA_008_START : BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008_START,
+        BATCH_PARA_001_END : BATCH_AND_SHIFT_DATA.BATCH_PARA_001_END,
+        BATCH_PARA_010_END : BATCH_AND_SHIFT_DATA.BATCH_PARA_010_END,
+        BATCH_PARA_012_END : BATCH_AND_SHIFT_DATA.BATCH_PARA_012_END,
+        BATCH_C_PARA_008_END : BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008_END,
     }
 }
 
