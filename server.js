@@ -315,8 +315,8 @@ function parseGraphData(data, benchmarkRow) {
     let startIndex = 0;
     let endIndex = dataLength;
 
-    if (data.length >= 12) {
-        startIndex = dataLength - 12;
+    if (data.length >= 13) {
+        startIndex = dataLength - 13;
     }
 
     //extracting labels
@@ -518,23 +518,81 @@ function calculateBatchAndShiftDifference(result) {
         BATCH_PARA_010: BATCH_PARA_010,
         BATCH_PARA_012: BATCH_PARA_012,
         BATCH_C_PARA_008: BATCH_C_PARA_008,
-        SHIFT_PARA_001_START : SHIFT_PARA_001_START,
-        SHIFT_PARA_010_START : SHIFT_PARA_010_START,
-        SHIFT_PARA_012_START : SHIFT_PARA_012_START,
-        SHIFT_C_PARA_008_START : SHIFT_C_PARA_008_START,
-        SHIFT_PARA_001_END : SHIFT_PARA_001_END,
-        SHIFT_PARA_010_END : SHIFT_PARA_010_END,
-        SHIFT_PARA_012_END : SHIFT_PARA_012_END,
-        SHIFT_C_PARA_008_END : SHIFT_C_PARA_008_END,
-        BATCH_PARA_001_START : BATCH_PARA_001_START,
-        BATCH_PARA_010_START : BATCH_PARA_010_START,
-        BATCH_PARA_012_START : BATCH_PARA_012_START,
-        BATCH_C_PARA_008_START : BATCH_C_PARA_008_START,
-        BATCH_PARA_001_END : BATCH_PARA_001_END,
-        BATCH_PARA_010_END : BATCH_PARA_010_END,
-        BATCH_PARA_012_END : BATCH_PARA_012_END,
-        BATCH_C_PARA_008_END : BATCH_C_PARA_008_END
+        SHIFT_PARA_001_START: SHIFT_PARA_001_START,
+        SHIFT_PARA_010_START: SHIFT_PARA_010_START,
+        SHIFT_PARA_012_START: SHIFT_PARA_012_START,
+        SHIFT_C_PARA_008_START: SHIFT_C_PARA_008_START,
+        SHIFT_PARA_001_END: SHIFT_PARA_001_END,
+        SHIFT_PARA_010_END: SHIFT_PARA_010_END,
+        SHIFT_PARA_012_END: SHIFT_PARA_012_END,
+        SHIFT_C_PARA_008_END: SHIFT_C_PARA_008_END,
+        BATCH_PARA_001_START: BATCH_PARA_001_START,
+        BATCH_PARA_010_START: BATCH_PARA_010_START,
+        BATCH_PARA_012_START: BATCH_PARA_012_START,
+        BATCH_C_PARA_008_START: BATCH_C_PARA_008_START,
+        BATCH_PARA_001_END: BATCH_PARA_001_END,
+        BATCH_PARA_010_END: BATCH_PARA_010_END,
+        BATCH_PARA_012_END: BATCH_PARA_012_END,
+        BATCH_C_PARA_008_END: BATCH_C_PARA_008_END
 
+    }
+}
+
+function getVectorGraphFormat(data) {
+
+    let loopingData = [...data]
+    let finalData = [];
+    for (let i = 0; i <= 60; i = i + 5) {
+        finalData[i / 5] = {x: parseInt(i), y: parseFloat(loopingData[i / 5])};
+    }
+    return finalData;
+}
+
+function getVectorFormatForNormalizedData(data) {
+
+    let maximum = Math.max(...data);
+    let minimum = Math.min(...data);
+    let finalData = [];
+
+    if (maximum === minimum) {
+        return data;
+    }
+
+    for (let i = 0; i <= 60; i = i + 5) {
+        let calculatedData = (((data[i / 5] - minimum) / (maximum - minimum)) * 100)
+        finalData[i / 5] = {x: parseInt(i), y: parseFloat(calculatedData)};
+    }
+    return finalData;
+}
+
+function getBarGraphDataForMaterialBalance (graphData, batchAndShiftData) {
+
+    let PARA_001 = [];
+    let PARA_010 = [];
+    let PARA_012 = [];
+    let C_PARA_008 = [];
+
+    PARA_001[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_001_END, y0 : graphData.LAST_ONE_HR_PARA_001_START}
+    PARA_001[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_PARA_001_END, y0 : batchAndShiftData.SHIFT_PARA_001_START}
+    PARA_001[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_PARA_001_END, y0 : batchAndShiftData.BATCH_PARA_001_START}
+
+    PARA_010[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_010_END, y0 : graphData.LAST_ONE_HR_PARA_010_START}
+    PARA_010[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_PARA_010_END, y0 : batchAndShiftData.SHIFT_PARA_010_START}
+    PARA_010[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_PARA_010_END, y0 : batchAndShiftData.BATCH_PARA_010_START}
+
+    PARA_012[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_012_END, y0 : graphData.LAST_ONE_HR_PARA_012_START}
+    PARA_012[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_PARA_012_END, y0 : batchAndShiftData.SHIFT_PARA_012_START}
+    PARA_012[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_PARA_012_END, y0 : batchAndShiftData.BATCH_PARA_012_START}
+
+    C_PARA_008[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_C_PARA_008_END, y0 : graphData.LAST_ONE_HR_C_PARA_008_START}
+    C_PARA_008[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_C_PARA_008_END, y0 : batchAndShiftData.SHIFT_C_PARA_008_START}
+    C_PARA_008[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_C_PARA_008_END, y0 : batchAndShiftData.BATCH_PARA_012_START}
+
+    return {
+        BAR_GRAPH_PARA_001: PARA_001,
+        BAR_GRAPH_PARA_010: PARA_010,
+        BAR_GRAPH_PARA_012: PARA_012,
+        BAR_GRAPH_C_PARA_008: C_PARA_008,
     }
 }
 
@@ -552,20 +610,28 @@ function calculatingAllVariables(result, benchmarkRow) {
     let C_PARA = calculate_C_Para_Variables(lastRow, benchmarkRow, totalTimeDifferenceInMinutes, P_ALT)
     let BATCH_AND_SHIFT_DATA = calculateBatchAndShiftDifference([...result])
 
+    let BAR_GRAPH_DATA = getBarGraphDataForMaterialBalance(graphData, BATCH_AND_SHIFT_DATA)
+
     return {
         currentRow: lastRow,
         benchmarkRow: csvHeaderData,
-        graphLabel: graphData.label,
-        productRecovered: graphData.productRecovered,
-        rmConsumed: graphData.rmConsumed,
-        energyConsumed: graphData.energyConsumed,
+        graphLabel: graphData.label, //need to change
+        productRecovered: getVectorGraphFormat(graphData.productRecovered),
+        rmConsumed: getVectorGraphFormat(graphData.rmConsumed),
+        energyConsumed: getVectorGraphFormat(graphData.energyConsumed),
+        normalizedProductRecovered: getVectorFormatForNormalizedData(graphData.productRecovered),
+        normalizedRMConsumed: getVectorFormatForNormalizedData(graphData.rmConsumed),
+        normalizedEnergyConsumed: getVectorFormatForNormalizedData(graphData.energyConsumed),
         effluentToETP: graphData.effluentToETP,
         totalTimeDifferenceInMinutes: totalTimeDifferenceInMinutes,
         P_ALT: P_ALT,
         C_PARA: C_PARA,
-        GRAPH_P_ALT_001: graphData.P_ALT_001,
-        GRAPH_P_ALT_002: graphData.P_ALT_002,
-        GRAPH_C_PARA_001: graphData.C_PARA_001,
+        GRAPH_P_ALT_001: getVectorGraphFormat(graphData.P_ALT_001),
+        GRAPH_P_ALT_002: getVectorGraphFormat(graphData.P_ALT_002),
+        GRAPH_C_PARA_001: getVectorGraphFormat(graphData.C_PARA_001),
+        normalizedGRAPH_P_ALT_001: getVectorFormatForNormalizedData(graphData.P_ALT_001),
+        normalizedGRAPH_P_ALT_002: getVectorFormatForNormalizedData(graphData.P_ALT_002),
+        normalizedGRAPH_C_PARA_001: getVectorFormatForNormalizedData(graphData.C_PARA_001),
         GRAPH_C_PARA_008: graphData.C_PARA_008,
         LAST_ONE_HR_PARA_001: graphData.LAST_ONE_HR_PARA_001,
         LAST_ONE_HR_PARA_010: graphData.LAST_ONE_HR_PARA_010,
@@ -587,22 +653,26 @@ function calculatingAllVariables(result, benchmarkRow) {
         BATCH_PARA_010: BATCH_AND_SHIFT_DATA.BATCH_PARA_010,
         BATCH_PARA_012: BATCH_AND_SHIFT_DATA.BATCH_PARA_012,
         BATCH_C_PARA_008: BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008,
-        SHIFT_PARA_001_START : BATCH_AND_SHIFT_DATA.SHIFT_PARA_001_START,
-        SHIFT_PARA_010_START : BATCH_AND_SHIFT_DATA.SHIFT_PARA_010_START,
-        SHIFT_PARA_012_START : BATCH_AND_SHIFT_DATA.SHIFT_PARA_012_START,
-        SHIFT_C_PARA_008_START : BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008_START,
-        SHIFT_PARA_001_END : BATCH_AND_SHIFT_DATA.SHIFT_PARA_001_END,
-        SHIFT_PARA_010_END : BATCH_AND_SHIFT_DATA.SHIFT_PARA_010_END,
-        SHIFT_PARA_012_END : BATCH_AND_SHIFT_DATA.SHIFT_PARA_012_END,
-        SHIFT_C_PARA_008_END : BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008_END,
-        BATCH_PARA_001_START : BATCH_AND_SHIFT_DATA.BATCH_PARA_001_START,
-        BATCH_PARA_010_START : BATCH_AND_SHIFT_DATA.BATCH_PARA_010_START,
-        BATCH_PARA_012_START : BATCH_AND_SHIFT_DATA.BATCH_PARA_012_START,
-        BATCH_C_PARA_008_START : BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008_START,
-        BATCH_PARA_001_END : BATCH_AND_SHIFT_DATA.BATCH_PARA_001_END,
-        BATCH_PARA_010_END : BATCH_AND_SHIFT_DATA.BATCH_PARA_010_END,
-        BATCH_PARA_012_END : BATCH_AND_SHIFT_DATA.BATCH_PARA_012_END,
-        BATCH_C_PARA_008_END : BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008_END,
+        SHIFT_PARA_001_START: BATCH_AND_SHIFT_DATA.SHIFT_PARA_001_START,
+        SHIFT_PARA_010_START: BATCH_AND_SHIFT_DATA.SHIFT_PARA_010_START,
+        SHIFT_PARA_012_START: BATCH_AND_SHIFT_DATA.SHIFT_PARA_012_START,
+        SHIFT_C_PARA_008_START: BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008_START,
+        SHIFT_PARA_001_END: BATCH_AND_SHIFT_DATA.SHIFT_PARA_001_END,
+        SHIFT_PARA_010_END: BATCH_AND_SHIFT_DATA.SHIFT_PARA_010_END,
+        SHIFT_PARA_012_END: BATCH_AND_SHIFT_DATA.SHIFT_PARA_012_END,
+        SHIFT_C_PARA_008_END: BATCH_AND_SHIFT_DATA.SHIFT_C_PARA_008_END,
+        BATCH_PARA_001_START: BATCH_AND_SHIFT_DATA.BATCH_PARA_001_START,
+        BATCH_PARA_010_START: BATCH_AND_SHIFT_DATA.BATCH_PARA_010_START,
+        BATCH_PARA_012_START: BATCH_AND_SHIFT_DATA.BATCH_PARA_012_START,
+        BATCH_C_PARA_008_START: BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008_START,
+        BATCH_PARA_001_END: BATCH_AND_SHIFT_DATA.BATCH_PARA_001_END,
+        BATCH_PARA_010_END: BATCH_AND_SHIFT_DATA.BATCH_PARA_010_END,
+        BATCH_PARA_012_END: BATCH_AND_SHIFT_DATA.BATCH_PARA_012_END,
+        BATCH_C_PARA_008_END: BATCH_AND_SHIFT_DATA.BATCH_C_PARA_008_END,
+        BAR_GRAPH_PARA_001: BAR_GRAPH_DATA.BAR_GRAPH_PARA_001,
+        BAR_GRAPH_PARA_010: BAR_GRAPH_DATA.BAR_GRAPH_PARA_010,
+        BAR_GRAPH_PARA_012: BAR_GRAPH_DATA.BAR_GRAPH_PARA_012,
+        BAR_GRAPH_C_PARA_008: BAR_GRAPH_DATA.BAR_GRAPH_C_PARA_008,
     }
 }
 
