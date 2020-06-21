@@ -17,6 +17,7 @@ var BDATA_001 = 0;
 var BDATA_002 = 0;
 var BDATA_003 = 0;
 var BDATA_004 = 0;
+var tokenArray = [];
 
 
 const VARIABLES = {
@@ -104,12 +105,21 @@ function initialize() {
 function calculatingPara() {
 
     console.log("Inside calaulatingPara()=>:::::")
-    temp = [];
-    csvResult = [];
-    csvHeaderData = [];
+
 
     firebase.storage().ref('data.csv').getDownloadURL().then(function (url) {
         d3.csv(url).then(function (result) {
+
+            let isEqual = JSON.stringify(csvResult) === JSON.stringify(result);
+
+            console.log("are values equal: ", isEqual)
+            if (isEqual) {
+                console.log("CSV results are same hence need not make the calculations")
+                return;
+            }
+            csvResult = [];
+            temp = [];
+            csvHeaderData = [];
             csvResult = [...result];
             let len = result.length;
             let currentDelta10 = 0;
@@ -185,7 +195,7 @@ function calculatingPara() {
                     idealValues: currentidealRow
                 });
             } else {
-                // console.log(temp);
+                //temp
             }
 
             firebase.storage().ref('benchmark.csv').getDownloadURL().then(function (url) {
@@ -195,8 +205,6 @@ function calculatingPara() {
                     finalResult = calculatingAllVariables(csvResult, csvHeaderData);
                 });
             });
-
-
         });
     });
 
@@ -565,28 +573,64 @@ function getVectorFormatForNormalizedData(data) {
     return finalData;
 }
 
-function getBarGraphDataForMaterialBalance (graphData, batchAndShiftData) {
+function getBarGraphDataForMaterialBalance(graphData, batchAndShiftData) {
 
     let PARA_001 = [];
     let PARA_010 = [];
     let PARA_012 = [];
     let C_PARA_008 = [];
 
-    PARA_001[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_001_END, y0 : graphData.LAST_ONE_HR_PARA_001_START}
-    PARA_001[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_PARA_001_END, y0 : batchAndShiftData.SHIFT_PARA_001_START}
-    PARA_001[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_PARA_001_END, y0 : batchAndShiftData.BATCH_PARA_001_START}
+    PARA_001[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_001_END, y0: graphData.LAST_ONE_HR_PARA_001_START}
+    PARA_001[1] = {
+        x: 'Current Shift',
+        y: batchAndShiftData.SHIFT_PARA_001_END,
+        y0: batchAndShiftData.SHIFT_PARA_001_START
+    }
+    PARA_001[2] = {
+        x: 'Current Batch',
+        y: batchAndShiftData.BATCH_PARA_001_END,
+        y0: batchAndShiftData.BATCH_PARA_001_START
+    }
 
-    PARA_010[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_010_END, y0 : graphData.LAST_ONE_HR_PARA_010_START}
-    PARA_010[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_PARA_010_END, y0 : batchAndShiftData.SHIFT_PARA_010_START}
-    PARA_010[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_PARA_010_END, y0 : batchAndShiftData.BATCH_PARA_010_START}
+    PARA_010[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_010_END, y0: graphData.LAST_ONE_HR_PARA_010_START}
+    PARA_010[1] = {
+        x: 'Current Shift',
+        y: batchAndShiftData.SHIFT_PARA_010_END,
+        y0: batchAndShiftData.SHIFT_PARA_010_START
+    }
+    PARA_010[2] = {
+        x: 'Current Batch',
+        y: batchAndShiftData.BATCH_PARA_010_END,
+        y0: batchAndShiftData.BATCH_PARA_010_START
+    }
 
-    PARA_012[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_012_END, y0 : graphData.LAST_ONE_HR_PARA_012_START}
-    PARA_012[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_PARA_012_END, y0 : batchAndShiftData.SHIFT_PARA_012_START}
-    PARA_012[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_PARA_012_END, y0 : batchAndShiftData.BATCH_PARA_012_START}
+    PARA_012[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_PARA_012_END, y0: graphData.LAST_ONE_HR_PARA_012_START}
+    PARA_012[1] = {
+        x: 'Current Shift',
+        y: batchAndShiftData.SHIFT_PARA_012_END,
+        y0: batchAndShiftData.SHIFT_PARA_012_START
+    }
+    PARA_012[2] = {
+        x: 'Current Batch',
+        y: batchAndShiftData.BATCH_PARA_012_END,
+        y0: batchAndShiftData.BATCH_PARA_012_START
+    }
 
-    C_PARA_008[0] = {x: 'Last one hour', y: graphData.LAST_ONE_HR_C_PARA_008_END, y0 : graphData.LAST_ONE_HR_C_PARA_008_START}
-    C_PARA_008[1] = {x: 'Current Shift', y: batchAndShiftData.SHIFT_C_PARA_008_END, y0 : batchAndShiftData.SHIFT_C_PARA_008_START}
-    C_PARA_008[2] = {x: 'Current Batch', y: batchAndShiftData.BATCH_C_PARA_008_END, y0 : batchAndShiftData.BATCH_PARA_012_START}
+    C_PARA_008[0] = {
+        x: 'Last one hour',
+        y: graphData.LAST_ONE_HR_C_PARA_008_END,
+        y0: graphData.LAST_ONE_HR_C_PARA_008_START
+    }
+    C_PARA_008[1] = {
+        x: 'Current Shift',
+        y: batchAndShiftData.SHIFT_C_PARA_008_END,
+        y0: batchAndShiftData.SHIFT_C_PARA_008_START
+    }
+    C_PARA_008[2] = {
+        x: 'Current Batch',
+        y: batchAndShiftData.BATCH_C_PARA_008_END,
+        y0: batchAndShiftData.BATCH_PARA_012_START
+    }
 
     return {
         BAR_GRAPH_PARA_001: PARA_001,
@@ -605,12 +649,15 @@ function calculatingAllVariables(result, benchmarkRow) {
 
     let cloneResult = [...result];
     let lastRow = cloneResult[cloneResult.length - 1];
+    let previousRow = cloneResult[cloneResult.length - 2];
 
     let P_ALT = calculate_P_Alt_Variables(lastRow, benchmarkRow, totalTimeDifferenceInMinutes)
     let C_PARA = calculate_C_Para_Variables(lastRow, benchmarkRow, totalTimeDifferenceInMinutes, P_ALT)
     let BATCH_AND_SHIFT_DATA = calculateBatchAndShiftDifference([...result])
 
     let BAR_GRAPH_DATA = getBarGraphDataForMaterialBalance(graphData, BATCH_AND_SHIFT_DATA)
+
+    sendRealTimeAlert(lastRow, csvHeaderData, previousRow)
 
     return {
         currentRow: lastRow,
@@ -680,9 +727,86 @@ app.get('/', function (req, res) {
     res.end(JSON.stringify(finalResult));
 })
 
-var server = app.listen(8081, function () {
-    firebaseInitialize();
+function sendPushNotification(title, messageBody) {
 
+    console.log("Inside send Push notifications")
+    var request = require('request');
+
+    request.post(
+        'https://exp.host/--/api/v2/push/send',
+        {json: {"to": tokenArray, "title": title, "body": messageBody}},
+        function (error, response, body) {
+            if (!error && response.statusCode === 200) {
+                console.log("Success Body:", body);
+            } else {
+                console.log("Error: ", error)
+                console.log("Response status", response.statusCode)
+                console.log("Body: ", body);
+                console.log("Error Body: ", body.errors[0].details)
+            }
+        }
+    );
+
+    // curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{"to":"ExponentPushToken[ZDy-LzLA7e4k8OddWFS3KG]","title":"hello","body":"world"}'
+}
+
+
+function sendRealTimeAlert(lastRow, benchmarkRow, previousRow, timeDuration = 35) {
+
+    tokenArray = [];
+
+    firebase.firestore().collection("collections").doc("notifications").onSnapshot((doc) => {
+        if (doc.exists) {
+
+            doc.data().token.forEach((key) => {
+                tokenArray.push(key);
+            });
+
+            if ((lastRow[VARIABLES.PARA_001] + lastRow[VARIABLES.PARA_002] - lastRow[VARIABLES.PARA_003] - lastRow[VARIABLES.PARA_004] + lastRow[VARIABLES.PARA_005]) >= benchmarkRow[VARIABLES.BM_002]) {
+                sendPushNotification("RTA-001", "Real Time Alert 1")
+            }
+
+            if ((lastRow[VARIABLES.PARA_001] <= benchmarkRow[VARIABLES.BM_001]) && (lastRow[VARIABLES.PARA_002] > previousRow[VARIABLES.PARA_002])) {
+                if (timeDuration >= 30) {
+                    sendPushNotification("RTA-002", "Real Time Alert 2")
+                }
+            }
+
+            if ((lastRow[VARIABLES.PARA_006] >= benchmarkRow[VARIABLES.BM_003]) && (lastRow[VARIABLES.PARA_007] < 5) && (lastRow[VARIABLES.PARA_008] < 100)) {
+                if (timeDuration >= 30) {
+                    sendPushNotification("RTA-003", "Real Time Alert 3")
+                }
+            }
+
+            if ((lastRow[VARIABLES.PARA_003] - lastRow[VARIABLES.PARA_011] - lastRow[VARIABLES.PARA_012]) >= benchmarkRow[VARIABLES.BM_004]) {
+                sendPushNotification("RTA-004", "Real Time Alert 4")
+            }
+
+            if ((lastRow[VARIABLES.PARA_013] <= benchmarkRow[VARIABLES.BM_005])) {
+                sendPushNotification("RTA-005", "Real Time Alert 5")
+            }
+
+            if ((lastRow[VARIABLES.PARA_014] >= benchmarkRow[VARIABLES.BM_006]) && (lastRow[VARIABLES.PARA_015] < 60) && (lastRow[VARIABLES.PARA_016] < 50)) {
+                if (timeDuration >= 30) {
+                    sendPushNotification("RTA-006", "Real Time Alert 6  ")
+                }
+            }
+
+            if ((lastRow[VARIABLES.PARA_004] - lastRow[VARIABLES.PARA_009] - lastRow[VARIABLES.PARA_004]) >= benchmarkRow[VARIABLES.BM_007]) {
+                sendPushNotification("RTA-007", "Real Time Alert 7")
+            }
+
+            if (lastRow[VARIABLES.PARA_017] <= benchmarkRow[VARIABLES.BM_008]) {
+                sendPushNotification("RTA-008", "Real Time Alert 8")
+            }
+        }
+
+    })
+}
+
+var server = app.listen(process.env.PORT, function () {
+    firebaseInitialize();
+    // sendPushNotification("Hello Krishna", "Welcome to Pretech-UI");
     setInterval(() => {
         initialize();
     }, 15000);
